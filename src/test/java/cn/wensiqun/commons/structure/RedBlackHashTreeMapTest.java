@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -22,13 +23,13 @@ public class RedBlackHashTreeMapTest {
 	
 	private TreeMap<Long, Map<String, Long>> expMap;
 
-	private int count = 20;
+	private int count = 20000;
 	
-	private int tsStep = 3;
+	private int tsStep = 4;
 	
-	private int base = 500;
+	private int base = 300;
 	
-	private int nameStep = 2;
+	private int nameStep = 3;
 	
 
 	private int exceptSize() {
@@ -360,10 +361,24 @@ public class RedBlackHashTreeMapTest {
 		}
 	}
 	
-	
+	private Random random = new Random();
 	private void testSubIterator(Long start, boolean fromInclusive, Long end, boolean toInclusive) {
 		List<Long> expVals = new ArrayList<Long>();
 		List<Long> actVals = new ArrayList<Long>();
+		
+
+		List<Long> removed = new ArrayList<Long>();
+		Iterator<Entry<Long,Map<String,Long>>> expIter = expMap.subMap(start, fromInclusive, end, toInclusive).entrySet().iterator();
+		while(expIter.hasNext()) {
+			Entry<Long,Map<String,Long>> v = expIter.next();
+			for(Long l : v.getValue().values()) {
+				expVals.add(l);
+			}
+			if(random.nextBoolean()) {
+				removed.add(v.getKey());
+				expIter.remove();
+			}
+		}
 		
 		Iterator<RedBlackHashTree<Long, TestKey, Long>> iter = map.subIterator(start, fromInclusive, end, toInclusive);
 		while(iter.hasNext()) {
@@ -371,10 +386,8 @@ public class RedBlackHashTreeMapTest {
 			for(Long l : next.value().values()) {
 				actVals.add(l);
 			}
-		}
-		for(Map<String, Long> v : expMap.subMap(start, fromInclusive, end, toInclusive).values()) {
-			for(Long l : v.values()) {
-				expVals.add(l);
+			if(removed.contains(next.getCompareObj())) {
+				iter.remove();
 			}
 		}
 		assectList(expVals, actVals);

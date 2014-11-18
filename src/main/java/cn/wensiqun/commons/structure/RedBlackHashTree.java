@@ -32,7 +32,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
     private RedBlackHashTree<T, K, V> parent;
 
     
-    private T compareObj;
+    T compareObj;
     
     /**
      * The value stored in this node

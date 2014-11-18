@@ -3,6 +3,7 @@ package cn.wensiqun.commons.structure;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import cn.wensiqun.commons.structure.RedBlackHashTree.OperatorResult;
 
@@ -354,7 +355,9 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
     }
     
     private void removeNode(RedBlackHashTree<T, K, V> target) {
-        // determine the node to be disconnected:
+    	this.count -= target.value().size();
+    	
+    	// determine the node to be disconnected:
         // two cases: if degree < 2 we remove target node;
         //            otherwise, remove predecessor
         RedBlackHashTree<T, K, V> freeNode;
@@ -374,6 +377,7 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         }
 
         target.valueMap = freeNode.valueMap; // move value reference
+        target.compareObj = freeNode.compareObj; // move value compareObj
 
         // child will be orphaned by the freeing of freeNode;
         // reparent this child carefully (it may be EMPTY)
@@ -402,6 +406,8 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         
         if (freeNode.isBlack()) 
             child.blackFixup();
+        
+        this.root = result.root();
     }
     
     private RedBlackHashTree<T, K, V> successor(RedBlackHashTree<T, K, V> t) {
@@ -474,27 +480,21 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         }
 
         public boolean hasNext() {
-        	RedBlackHashTree<T, K, V> next = traversal();
-        	if(nodeIsValid(next)) {
-        		this.next = next;
-        		return true;
-        	}
-            return false;
+            return next != null || (next = traversal()) != null;
         }
 
         public RedBlackHashTree<T, K, V> next() {
-            if(next != null) {
-            	current = next;
-                next = null;
-            } else {
-            	current = traversal();
-            }
-            return current;
+            if (next != null) {
+        		current = next;
+        		next = traversal();
+        		return current;
+        	} 
+        	throw new NoSuchElementException();
         }
         
         private RedBlackHashTree<T, K, V> traversal() {
         	RedBlackHashTree<T, K, V> node;
-        	if(current == null) {
+        	if(current == null && next == null) {
         		if(includeStart) {
                 	if (isReverse) {
                 		node = floorNode(start);
