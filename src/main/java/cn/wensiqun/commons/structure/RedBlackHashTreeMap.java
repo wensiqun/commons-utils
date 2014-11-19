@@ -1,20 +1,19 @@
 package cn.wensiqun.commons.structure;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 import cn.wensiqun.commons.structure.RedBlackHashTree.OperatorResult;
 
 
-public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> implements Cloneable, java.io.Serializable
+public class RedBlackHashTreeMap<K extends RedBlackHashTreeComparable, V> implements Cloneable, java.io.Serializable
 {
 	
 	/**
      * A reference to the root of the tree
      */
-    protected RedBlackHashTree<T, K, V> root;
+    protected RedBlackHashTree<K, V> root;
 
     /**
      * The number of nodes in the tree
@@ -27,7 +26,7 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
      */
     public RedBlackHashTreeMap()
     {
-        root = new RedBlackHashTree<T, K, V>();
+        root = new RedBlackHashTree<K, V>();
         count = 0;
     }
     
@@ -49,7 +48,7 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
      */
     public void clear()
     {
-        root = new RedBlackHashTree<T, K, V>();
+        root = new RedBlackHashTree<K, V>();
         count = 0;
     }
 
@@ -75,7 +74,7 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
     public V put(K key, V value)
     {
         //Assert.pre(value instanceof Comparable,"value must implement Comparable");
-    	OperatorResult<T, K, V> result = root.put(key, value);
+    	OperatorResult<K, V> result = root.put(key, value);
     	root = result.getTree();
         count += (Integer)result.getValue();
         return value;
@@ -93,7 +92,7 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
      * @return Value to be removed from tree or null if no value removed
      */
     public V remove(K key){
-    	OperatorResult<T, K, V> result = root.remove(key);
+    	OperatorResult<K, V> result = root.remove(key);
     	if(result.getValue() != null) {
     		this.root = result.getTree();
     		count--;
@@ -106,7 +105,7 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
     	return root.get(key);
     }
     
-    public Map<K, V> getMap(T compareObj) {
+    public Map<K, V> getMap(Comparable compareObj) {
         return root.getMap(compareObj);	
     }
 
@@ -143,8 +142,8 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
 
 
     //get first
-    public RedBlackHashTree<T, K, V> firstNode() {
-        RedBlackHashTree<T, K, V> p = root;
+    public RedBlackHashTree<K, V> firstNode() {
+        RedBlackHashTree<K, V> p = root;
         if(nodeIsValid(p)) {
             while(nodeIsValid(p.left()))
                 p = p.left();
@@ -154,8 +153,8 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
 
     //get last
     
-    public RedBlackHashTree<T, K, V> lastNode() {
-        RedBlackHashTree<T, K, V> p = root;
+    public RedBlackHashTree<K, V> lastNode() {
+        RedBlackHashTree<K, V> p = root;
         if(nodeIsValid(p)) {
             while(nodeIsValid(p.right()))
                 p = p.right();
@@ -165,10 +164,10 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
     
     //get ceiling 
 
-    public RedBlackHashTree<T, K, V> ceilingNode(T compareObj) {
-        RedBlackHashTree<T, K, V> p = root;
+    public RedBlackHashTree<K, V> ceilingNode(Comparable compareObj) {
+        RedBlackHashTree<K, V> p = root;
         while (nodeIsValid(p)) {
-            int cmp = ((Comparable)compareObj).compareTo(p.getCompareObj());
+            int cmp = compareObj.compareTo(p.getCompareObj());
             if (cmp < 0) {
                 if (nodeIsValid(p.left()))
                     p = p.left();
@@ -178,8 +177,8 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
                 if (nodeIsValid(p.right())) {
                     p = p.right();
                 } else {
-                    RedBlackHashTree<T, K, V> parent = p.parent();
-                    RedBlackHashTree<T, K, V> ch = p;
+                    RedBlackHashTree<K, V> parent = p.parent();
+                    RedBlackHashTree<K, V> ch = p;
                     while (nodeIsValid(parent) && ch == parent.right()) {
                         ch = parent;
                         parent = parent.parent();
@@ -192,21 +191,21 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         return null;
     }
     
-    public RedBlackHashTree<T, K, V> ceilingNode(K key) {
-        RedBlackHashTree<T, K, V> result = ceilingNode(key.getComparableObject());
+    public RedBlackHashTree<K, V> ceilingNode(K key) {
+        RedBlackHashTree<K, V> result = ceilingNode(key.getComparableObject());
         return result == null ? null : result;
     }
     
     public V ceilingValue(K key) {
-        RedBlackHashTree<T, K, V> result = ceilingNode(key.getComparableObject());
+        RedBlackHashTree<K, V> result = ceilingNode(key.getComparableObject());
         return result == null ? null : result.value().get(key);
     }
     
     // get Higher
-    public RedBlackHashTree<T, K, V> higherNode(T compareObj) {
-        RedBlackHashTree<T, K, V> p = root;
+    public RedBlackHashTree<K, V> higherNode(Comparable compareObj) {
+        RedBlackHashTree<K, V> p = root;
         while (nodeIsValid(p)) {
-            int cmp = ((Comparable)compareObj).compareTo(p.getCompareObj());
+            int cmp = compareObj.compareTo(p.getCompareObj());
             if (cmp < 0) {
                 if (nodeIsValid(p.left()))
                     p = p.left();
@@ -216,8 +215,8 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
                 if (nodeIsValid(p.right())) {
                     p = p.right();
                 } else {
-                    RedBlackHashTree<T, K, V> parent = p.parent();
-                    RedBlackHashTree<T, K, V> ch = p;
+                    RedBlackHashTree<K, V> parent = p.parent();
+                    RedBlackHashTree<K, V> ch = p;
                     while (nodeIsValid(parent) && ch == parent.right()) {
                         ch = parent;
                         parent = parent.parent();
@@ -229,22 +228,22 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         return null;
     }
     
-    public RedBlackHashTree<T, K, V> higherNode(K key) {
-        RedBlackHashTree<T, K, V> result = higherNode(key.getComparableObject());
+    public RedBlackHashTree<K, V> higherNode(K key) {
+        RedBlackHashTree<K, V> result = higherNode(key.getComparableObject());
         return result == null ? null : result;
     }
     
     public V higherValue(K key) {
-        RedBlackHashTree<T, K, V> result = higherNode(key.getComparableObject());
+        RedBlackHashTree<K, V> result = higherNode(key.getComparableObject());
         return result == null ? null : result.value().get(key);
     }
     
     // get floor
     
-    public RedBlackHashTree<T, K, V> floorNode(T compareObj) {
-        RedBlackHashTree<T, K, V> p = root;
+    public RedBlackHashTree<K, V> floorNode(Comparable compareObj) {
+        RedBlackHashTree<K, V> p = root;
         while (nodeIsValid(p)) {
-            int cmp = ((Comparable)compareObj).compareTo(p.getCompareObj());
+            int cmp = compareObj.compareTo(p.getCompareObj());
             if (cmp > 0) {
                 if (nodeIsValid(p.right()))
                     p = p.right();
@@ -254,8 +253,8 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
                 if (nodeIsValid(p.left())) {
                     p = p.left();
                 } else {
-                    RedBlackHashTree<T, K, V> parent = p.parent();
-                    RedBlackHashTree<T, K, V> ch = p;
+                    RedBlackHashTree<K, V> parent = p.parent();
+                    RedBlackHashTree<K, V> ch = p;
                     while (nodeIsValid(parent) && ch == parent.left()) {
                         ch = parent;
                         parent = parent.parent();
@@ -269,22 +268,22 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         return null;
     }
     
-    public RedBlackHashTree<T, K, V> floorNode(K key) {
-        RedBlackHashTree<T, K, V> result = floorNode(key.getComparableObject());
+    public RedBlackHashTree<K, V> floorNode(K key) {
+        RedBlackHashTree<K, V> result = floorNode(key.getComparableObject());
         return result == null ? null : result;
     }
     
     public V floorValue(K key) {
-        RedBlackHashTree<T, K, V> result = floorNode(key.getComparableObject());
+        RedBlackHashTree<K, V> result = floorNode(key.getComparableObject());
         return result == null ? null : result.value().get(key);
     }
     
     // get lower
     
-    public RedBlackHashTree<T, K, V> lowerNode(T compareObj) {
-        RedBlackHashTree<T, K, V> p = root;
+    public RedBlackHashTree<K, V> lowerNode(Comparable compareObj) {
+        RedBlackHashTree<K, V> p = root;
         while (nodeIsValid(p)) {
-            int cmp = ((Comparable)compareObj).compareTo(p.getCompareObj());
+            int cmp = compareObj.compareTo(p.getCompareObj());
             if (cmp > 0) {
                 if (nodeIsValid(p.right()))
                     p = p.right();
@@ -294,8 +293,8 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
                 if (nodeIsValid(p.left())) {
                     p = p.left();
                 } else {
-                    RedBlackHashTree<T, K, V> parent = p.parent();
-                    RedBlackHashTree<T, K, V> ch = p;
+                    RedBlackHashTree<K, V> parent = p.parent();
+                    RedBlackHashTree<K, V> ch = p;
                     while (nodeIsValid(parent) && ch == parent.left()) {
                         ch = parent;
                         parent = parent.parent();
@@ -307,60 +306,60 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         return null;
     }
     
-    public RedBlackHashTree<T, K, V> lowerNode(K key) {
-        RedBlackHashTree<T, K, V> result = lowerNode(key.getComparableObject());
+    public RedBlackHashTree<K, V> lowerNode(K key) {
+        RedBlackHashTree<K, V> result = lowerNode(key.getComparableObject());
         return result == null ? null : result;
     }
     
     public V lowerValue(K key) {
-        RedBlackHashTree<T, K, V> result = lowerNode(key.getComparableObject());
+        RedBlackHashTree<K, V> result = lowerNode(key.getComparableObject());
         return result == null ? null : result.value().get(key);
     }
     
-    public RedBlackHashTree<T, K, V> pollFirstNode() {
-        RedBlackHashTree<T, K, V> rbht = firstNode();
+    public RedBlackHashTree<K, V> pollFirstNode() {
+        RedBlackHashTree<K, V> rbht = firstNode();
         removeNode(rbht);
         return rbht;
     }
 
-    public RedBlackHashTree<T, K, V> pollLastNode() {
-        RedBlackHashTree<T, K, V> rbht = lastNode();
+    public RedBlackHashTree<K, V> pollLastNode() {
+        RedBlackHashTree<K, V> rbht = lastNode();
         removeNode(rbht);
         return rbht;
     }
 
-    public Iterator<RedBlackHashTree<T, K, V>> subIterator(T fromCompareObj, boolean fromInclusive, T toCompareObj,
+    public Iterator<RedBlackHashTree<K, V>> subIterator(Comparable fromCompareObj, boolean fromInclusive, Comparable toCompareObj,
             boolean toInclusive) {
         return new SubIterator(fromCompareObj, toCompareObj, fromInclusive, toInclusive);
     }
 
-    public Iterator<RedBlackHashTree<T, K, V>> subIterator(T fromCompareObj, T toCompareObj) {
+    public Iterator<RedBlackHashTree<K, V>> subIterator(Comparable fromCompareObj, Comparable toCompareObj) {
         return subIterator(fromCompareObj, true, toCompareObj, false);
     }
 
-    public Iterator<RedBlackHashTree<T, K, V>> headIterator(T toCompareObj, boolean inclusive) {
+    public Iterator<RedBlackHashTree<K, V>> headIterator(Comparable toCompareObj, boolean inclusive) {
         return subIterator(firstNode().getCompareObj(), true, toCompareObj, inclusive);
     }
 
-    public Iterator<RedBlackHashTree<T, K, V>> headIterator(T toCompareObj) {
+    public Iterator<RedBlackHashTree<K, V>> headIterator(Comparable toCompareObj) {
         return subIterator(firstNode().getCompareObj(), true, toCompareObj, false);
     }
 
-    public Iterator<RedBlackHashTree<T, K, V>> tailIterator(T fromCompareObj, boolean inclusive) {
+    public Iterator<RedBlackHashTree<K, V>> tailIterator(Comparable fromCompareObj, boolean inclusive) {
         return subIterator(fromCompareObj, inclusive, lastNode().getCompareObj(), true);
     }
 
-    public Iterator<RedBlackHashTree<T, K, V>> tailIterator(T fromCompareObj) {
+    public Iterator<RedBlackHashTree<K, V>> tailIterator(Comparable fromCompareObj) {
         return subIterator(fromCompareObj, false, lastNode().getCompareObj(), true);
     }
     
-    private void removeNode(RedBlackHashTree<T, K, V> target) {
+    private void removeNode(RedBlackHashTree<K, V> target) {
     	this.count -= target.value().size();
     	
     	// determine the node to be disconnected:
         // two cases: if degree < 2 we remove target node;
         //            otherwise, remove predecessor
-        RedBlackHashTree<T, K, V> freeNode;
+        RedBlackHashTree<K, V> freeNode;
         if (target.left().isEmpty() ||
             target.right().isEmpty()) // simply re-root tree at right
         {
@@ -381,7 +380,7 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
 
         // child will be orphaned by the freeing of freeNode;
         // reparent this child carefully (it may be EMPTY)
-        RedBlackHashTree<T, K, V> child;
+        RedBlackHashTree<K, V> child;
         if (freeNode.left().isEmpty())
         {
             child = freeNode.right();
@@ -402,7 +401,7 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         }
 
         // Assertion: child has been reparented
-        RedBlackHashTree<T, K, V> result = child.root();  
+        RedBlackHashTree<K, V> result = child.root();  
         
         if (freeNode.isBlack()) 
             child.blackFixup();
@@ -410,18 +409,18 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         this.root = result.root();
     }
     
-    private RedBlackHashTree<T, K, V> successor(RedBlackHashTree<T, K, V> t) {
+    private RedBlackHashTree<K, V> successor(RedBlackHashTree<K, V> t) {
     	
     	if(!nodeIsValid(t)) {
     	    return null;
     	} else if (nodeIsValid(t.right())) {
-    		RedBlackHashTree<T, K, V> p = t.right();
+    		RedBlackHashTree<K, V> p = t.right();
     		while(nodeIsValid(p.left())) {
     			p = p.left();
     		}
     		return p;
     	} else {
-    		RedBlackHashTree<T, K, V> p = t.parent();
+    		RedBlackHashTree<K, V> p = t.parent();
     		while(nodeIsValid(p) && t.isRightChild()) {
     			t = p;
     			p = t.parent();
@@ -431,17 +430,17 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
     	}
     }
     
-    private RedBlackHashTree<T, K, V> predecessor(RedBlackHashTree<T, K, V> t) {
+    private RedBlackHashTree<K, V> predecessor(RedBlackHashTree<K, V> t) {
     	if(!nodeIsValid(t)) {
     	    return null;
     	} else if (nodeIsValid(t.left())) {
-    		RedBlackHashTree<T, K, V> p = t.left();
+    		RedBlackHashTree<K, V> p = t.left();
     		while(nodeIsValid(p.right())) {
     			p = p.right();
     		}
     		return p;
     	} else {
-    		RedBlackHashTree<T, K, V> p = t.parent();
+    		RedBlackHashTree<K, V> p = t.parent();
     		while(nodeIsValid(p) && t.isLeftChild()) {
     			t = p;
     			p = t.parent();
@@ -451,19 +450,19 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
     	}
     }
     
-    private boolean nodeIsValid(RedBlackHashTree<T, K, V> t) {
+    private boolean nodeIsValid(RedBlackHashTree<K, V> t) {
     	return t != null && !t.isEmpty();
     }
     
-    private class SubIterator implements Iterator<RedBlackHashTree<T, K, V>> {
+    private class SubIterator implements Iterator<RedBlackHashTree<K, V>> {
 
-        private RedBlackHashTree<T, K, V> current;
+        private RedBlackHashTree<K, V> current;
         
-        private RedBlackHashTree<T, K, V> next;
+        private RedBlackHashTree<K, V> next;
         
-        private T start;
+        private Comparable start;
         
-        private T end;
+        private Comparable end;
         
         private boolean isReverse;
         
@@ -471,7 +470,7 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         
         private boolean includeEnd;
         
-        public SubIterator(T start, T end, boolean includeStart, boolean includeEnd) {
+        public SubIterator(Comparable start, Comparable end, boolean includeStart, boolean includeEnd) {
             this.start = start;
         	this.end = end;
             this.includeStart = includeStart;
@@ -483,7 +482,7 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
             return next != null || (next = traversal()) != null;
         }
 
-        public RedBlackHashTree<T, K, V> next() {
+        public RedBlackHashTree<K, V> next() {
             if (next != null) {
         		current = next;
         		next = traversal();
@@ -492,8 +491,8 @@ public class RedBlackHashTreeMap<T, K extends RedBlackHashTreeComparable<T>, V> 
         	throw new NoSuchElementException();
         }
         
-        private RedBlackHashTree<T, K, V> traversal() {
-        	RedBlackHashTree<T, K, V> node;
+        private RedBlackHashTree<K, V> traversal() {
+        	RedBlackHashTree<K, V> node;
         	if(current == null && next == null) {
         		if(includeStart) {
                 	if (isReverse) {

@@ -14,25 +14,25 @@ import java.util.Map;
  * @see structure.BinaryTree
  * @see structure.BinarySearchTree
  */
-public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
+public class RedBlackHashTree<K extends RedBlackHashTreeComparable, V>
 {
     /**
      * The left child of this node, or EMPTY
      */
-	private RedBlackHashTree<T, K, V> left;
+	private RedBlackHashTree<K, V> left;
 
     /**
      * The right child of this node, or EMPTY
      */
-    private RedBlackHashTree<T, K, V> right;
+    private RedBlackHashTree<K, V> right;
 
     /**
      * The parent of this node, or null
      */
-    private RedBlackHashTree<T, K, V> parent;
+    private RedBlackHashTree<K, V> parent;
 
     
-    T compareObj;
+    Comparable compareObj;
     
     /**
      * The value stored in this node
@@ -78,7 +78,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
         valueMap.put(key, v);
         compareObj = key.getComparableObject();
         parent = null;
-        left = right = new RedBlackHashTree<T, K, V>();
+        left = right = new RedBlackHashTree<K, V>();
         isRed = false;  // roots of tree should be colored black
     }
 
@@ -151,7 +151,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      * @post Returns reference to left subtree, or null
      * @return The left subtree of this node
      */
-    protected RedBlackHashTree<T, K, V> left()
+    protected RedBlackHashTree<K, V> left()
     {
         return left;
     }
@@ -162,7 +162,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      * @post Returns reference to right subtree, or null
      * @return The right subtree of this node
      */
-    protected RedBlackHashTree<T, K, V> right()
+    protected RedBlackHashTree<K, V> right()
     {
         return right;
     }
@@ -174,7 +174,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      * @post Returns reference to parent node, or null
      * @return Reference to parent of this node
      */
-    protected RedBlackHashTree<T, K, V> parent()
+    protected RedBlackHashTree<K, V> parent()
     {
         return parent;
     }
@@ -185,7 +185,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      * @post Re-parents this node to parent reference, or null
      * @param newParent A reference to the new parent of this node
      */
-    protected void setParent(RedBlackHashTree<T, K, V> newParent)
+    protected void setParent(RedBlackHashTree<K, V> newParent)
     {
         parent = newParent;
     }
@@ -199,7 +199,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      *       else makes newLeft a left child of this, 
      *       and this newLeft's parent
     */
-    protected void setLeft(RedBlackHashTree<T, K, V> newLeft)
+    protected void setLeft(RedBlackHashTree<K, V> newLeft)
     {
         if (isEmpty()) 
         	return;
@@ -220,7 +220,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      *       else makes newRight a right child of this, 
      *       and this newRight's parent
     */
-    protected void setRight(RedBlackHashTree<T, K, V> newRight)
+    protected void setRight(RedBlackHashTree<K, V> newRight)
     {
         if (isEmpty()) 
         	return;
@@ -288,9 +288,9 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      * @post Returns the root of the tree node n
      * @return Root of tree
      */
-    protected RedBlackHashTree<T, K, V> root()
+    protected RedBlackHashTree<K, V> root()
     {
-        RedBlackHashTree<T, K, V> result = this;
+        RedBlackHashTree<K, V> result = this;
         while (!result.isRoot()) {
             result = result.parent();
         }
@@ -322,8 +322,8 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
     {
         // all of this information must be grabbed before
         // any of the references are set.  Draw a diagram for help
-        RedBlackHashTree<T, K, V> parent = parent();
-        RedBlackHashTree<T, K, V> newRoot = left();
+        RedBlackHashTree<K, V> parent = parent();
+        RedBlackHashTree<K, V> newRoot = left();
         
         // is the this node a child; if so, a right child?
         boolean wasChild = !isRoot();
@@ -354,8 +354,8 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
     {
         // all of this information must be grabbed before
         // any of the references are set.  Draw a diagram for help
-        RedBlackHashTree<T, K, V> parent = parent();  // could be null
-        RedBlackHashTree<T, K, V> newRoot = right();
+        RedBlackHashTree<K, V> parent = parent();  // could be null
+        RedBlackHashTree<K, V> newRoot = right();
         // is the this node a child; if so, a left child?
         boolean wasChild = !isRoot();
         boolean wasRightChild = isRightChild();
@@ -383,10 +383,10 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      * @post adds a comparable value to the red-black tree;
      *       returns the modified tree
      */
-    public OperatorResult<T, K, V> put(K k, V v)
+    public OperatorResult<K, V> put(K k, V v)
     {
-    	OperatorResult<T, K, V> result = insert(k, v);
-        RedBlackHashTree<T, K, V> tree = result.getTree();  // first, do a plain insert
+    	OperatorResult<K, V> result = insert(k, v);
+        RedBlackHashTree<K, V> tree = result.getTree();  // first, do a plain insert
         tree.setRed();  // we insert nodes as red nodes - a first guess
         tree.redFixup();  // now, rebalance the tree
         result.tree = tree.root();
@@ -400,11 +400,11 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      * @pre c is a non-null Comparable value
      * @post c is inserted into search tree rooted at this
      */
-    private OperatorResult<T, K, V> insert(K key, V val)
+    private OperatorResult<K, V> insert(K key, V val)
     {
         // trivial case - tree was empty:
         if (isEmpty()) 
-        	return new OperatorResult<T, K, V>(new RedBlackHashTree<T, K, V>(key, val), 1);
+        	return new OperatorResult<K, V>(new RedBlackHashTree<K, V>(key, val), 1);
 
         // decide to insert value to left or right of root:
         int compareRes = ((Comparable)key.getComparableObject()).compareTo(compareObj);
@@ -412,9 +412,9 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
 
             // if to left and no left child, we insert value as leaf 
             if (left().isEmpty()) {
-                RedBlackHashTree<T, K, V> result = new RedBlackHashTree<T, K, V>(key, val);
+                RedBlackHashTree<K, V> result = new RedBlackHashTree<K, V>(key, val);
                 setLeft(result);
-                return new OperatorResult<T, K, V>(result, 1);
+                return new OperatorResult<K, V>(result, 1);
             } else {
                 // recursively insert to left
                 return left().insert(key, val);
@@ -423,9 +423,9 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
 
             // if to right and no left child, we insert value as leaf
             if (right().isEmpty()) {
-                RedBlackHashTree<T, K, V> result = new RedBlackHashTree<T, K, V>(key, val);
+                RedBlackHashTree<K, V> result = new RedBlackHashTree<K, V>(key, val);
                 setRight(result);
-                return new OperatorResult<T, K, V>(result, 1);
+                return new OperatorResult<K, V>(result, 1);
             } else {
                 // recursively insert to right
                 return right().insert(key, val);
@@ -433,7 +433,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
         } else {
         	int oldSize= value().size();
         	value().put(key, val);
-        	return new OperatorResult<T, K, V>(this, value().size() - oldSize);
+        	return new OperatorResult<K, V>(this, value().size() - oldSize);
         }
     }
 
@@ -450,10 +450,10 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
             // ensure that root is black (might have been insertion pt)
             root().setBlack();
         } else {
-            RedBlackHashTree<T, K, V> parent = parent();  // we know parent exists
+            RedBlackHashTree<K, V> parent = parent();  // we know parent exists
             // since parent is red, it is not root; grandParent exists & black
-            RedBlackHashTree<T, K, V> grandParent = parent.parent();
-            RedBlackHashTree<T, K, V> aunt;  // sibling of parent (may exist)
+            RedBlackHashTree<K, V> grandParent = parent.parent();
+            RedBlackHashTree<K, V> aunt;  // sibling of parent (may exist)
 
             if (parent.isLeftChild())
             {
@@ -524,18 +524,18 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      * @pre c is non-null
      * @post the value is removed; resulting tree is returned
      */
-    public OperatorResult<T, K, V> remove(K key)
+    public OperatorResult<K, V> remove(K key)
     {
         // find the target node - the node whose value is removed
-        RedBlackHashTree<T, K, V> target = locate(key);
+        RedBlackHashTree<K, V> target = locate(key);
         
         if (target == null || target.isEmpty()) 
-        	return new OperatorResult<T, K, V>(root(), null);
+        	return new OperatorResult<K, V>(root(), null);
 
         V value;
         if(target.value().size() > 1) {
         	value = target.value().remove(key);
-        	return new OperatorResult<T, K, V>(root(), value);
+        	return new OperatorResult<K, V>(root(), value);
         } else {
         	value = target.value().get(key);
         }
@@ -543,7 +543,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
         // determine the node to be disconnected:
         // two cases: if degree < 2 we remove target node;
         //            otherwise, remove predecessor
-        RedBlackHashTree<T, K, V> freeNode;
+        RedBlackHashTree<K, V> freeNode;
         if (target.left().isEmpty() ||
             target.right().isEmpty()) // simply re-root tree at right
         {
@@ -564,7 +564,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
 
         // child will be orphaned by the freeing of freeNode;
         // reparent this child carefully (it may be EMPTY)
-        RedBlackHashTree<T, K, V> child;
+        RedBlackHashTree<K, V> child;
         if (freeNode.left().isEmpty())
         {
             child = freeNode.right();
@@ -585,12 +585,12 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
         }
 
         // Assertion: child has been reparented
-        RedBlackHashTree<T, K, V> result = child.root();  
+        RedBlackHashTree<K, V> result = child.root();  
         
         if (freeNode.isBlack()) 
         	child.blackFixup();
         
-        return new OperatorResult<T, K, V>(result.root(), value);
+        return new OperatorResult<K, V>(result.root(), value);
     }
 
     /**
@@ -612,7 +612,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
         {
             setBlack();
         } else {
-            RedBlackHashTree<T, K, V> sibling, parent; // temporary refs to relates
+            RedBlackHashTree<K, V> sibling, parent; // temporary refs to relates
             // we hold onto our parent because the nodes shift about
             parent = parent();
 
@@ -728,11 +728,11 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      * @pre c is non-null
      * @post returns a node of this tree that contains c, or null
      */
-    private RedBlackHashTree<T, K, V> locate(K key)
+    private RedBlackHashTree<K, V> locate(K key)
     {
         if (isEmpty()) 
         	return null;
-        int relation = ((Comparable)key.getComparableObject()).compareTo(compareObj);
+        int relation = key.getComparableObject().compareTo(compareObj);
         if (relation == 0) 
         	return this;
         if (relation < 0) 
@@ -741,10 +741,10 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
         	return right().locate(key);
     }
     
-    protected RedBlackHashTree<T, K, V> locate(T compareObj) {
+    protected RedBlackHashTree<K, V> locate(Comparable compareObj) {
     	 if (isEmpty()) 
          	return null;
-         int relation = ((Comparable)compareObj).compareTo(this.compareObj);
+         int relation = compareObj.compareTo(this.compareObj);
          if (relation == 0) 
          	return this;
          if (relation < 0) 
@@ -762,7 +762,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      */
     public V get(K key)
     {
-        RedBlackHashTree<T, K, V> n = locate(key);
+        RedBlackHashTree<K, V> n = locate(key);
         if (n == null) 
         	return null;
         else 
@@ -775,8 +775,8 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
      * @param compareObj
      * @return
      */
-    public Map<K, V> getMap(T compareObj) {
-    	RedBlackHashTree<T, K, V> n = locate(compareObj);
+    public Map<K, V> getMap(Comparable compareObj) {
+    	RedBlackHashTree<K, V> n = locate(compareObj);
         if (n == null) 
         	return null;
         else 
@@ -944,7 +944,7 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
         return "Black";
     }
     
-    public T getCompareObj() {
+    public Comparable getCompareObj() {
 		return compareObj;
 	}
 
@@ -960,18 +960,18 @@ public class RedBlackHashTree<T, K extends RedBlackHashTreeComparable<T>, V>
         else         return "[" + left() + value() + right() +"]";
     }
     
-    public static class OperatorResult<T, K extends RedBlackHashTreeComparable<T>, V> {
+    public static class OperatorResult<K extends RedBlackHashTreeComparable, V> {
     	
-    	private RedBlackHashTree<T, K, V> tree;
+    	private RedBlackHashTree<K, V> tree;
     	
     	private Object retResult;
 
-		public OperatorResult(RedBlackHashTree<T, K, V> root, Object retResult) {
+		public OperatorResult(RedBlackHashTree<K, V> root, Object retResult) {
 			this.tree = root;
 			this.retResult = retResult;
 		}
 
-		public RedBlackHashTree<T, K, V> getTree() {
+		public RedBlackHashTree<K, V> getTree() {
 			return tree;
 		}
 

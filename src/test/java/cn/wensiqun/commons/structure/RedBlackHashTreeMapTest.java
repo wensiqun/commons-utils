@@ -19,11 +19,11 @@ import org.junit.Test;
 
 public class RedBlackHashTreeMapTest {
 
-	RedBlackHashTreeMap<Long, TestKey, Long> map;
+	RedBlackHashTreeMap<TestKey, Long> map;
 	
 	private TreeMap<Long, Map<String, Long>> expMap;
 
-	private int count = 20000;
+	private int count = 2000;
 	
 	private int tsStep = 4;
 	
@@ -119,7 +119,7 @@ public class RedBlackHashTreeMapTest {
 	
 	@Before
 	public void setup(){
-		map = new RedBlackHashTreeMap<Long, TestKey, Long>();
+		map = new RedBlackHashTreeMap<TestKey, Long>();
 		expMap = new TreeMap<Long, Map<String, Long>>();
 		for(int i=0; i<count; i++) {
 			Long ts = (long)(i / tsStep * base);
@@ -251,7 +251,7 @@ public class RedBlackHashTreeMapTest {
 
 		
 		Entry<Long, Map<String, Long>> entry = expMap.higherEntry(k.getComparableObject() - (base - 1));
-		RedBlackHashTree<Long, TestKey, Long> rbht = map.higherNode(k.getComparableObject() - (base - 1));
+		RedBlackHashTree<TestKey, Long> rbht = map.higherNode(k.getComparableObject() - (base - 1));
 		if(entry == null) {
 			assertTrue(rbht == null || rbht.isEmpty());
 		} else {
@@ -282,7 +282,7 @@ public class RedBlackHashTreeMapTest {
 
 		
 		Entry<Long, Map<String, Long>> entry = expMap.floorEntry(k.getComparableObject() - (base - 1));
-		RedBlackHashTree<Long, TestKey, Long> rbht = map.floorNode(k.getComparableObject() - (base - 1));
+		RedBlackHashTree<TestKey, Long> rbht = map.floorNode(k.getComparableObject() - (base - 1));
 		if(entry == null) {
 			assertTrue(rbht == null || rbht.isEmpty());
 		} else {
@@ -314,7 +314,7 @@ public class RedBlackHashTreeMapTest {
 
 		
 		Entry<Long, Map<String, Long>> entry = expMap.lowerEntry(k.getComparableObject() - (base - 1));
-		RedBlackHashTree<Long, TestKey, Long> rbht = map.lowerNode(k.getComparableObject() - (base - 1));
+		RedBlackHashTree<TestKey, Long> rbht = map.lowerNode(k.getComparableObject() - (base - 1));
 		if(entry == null) {
 			assertTrue(rbht == null || rbht.isEmpty());
 		} else {
@@ -340,7 +340,7 @@ public class RedBlackHashTreeMapTest {
 	
 	@Test
 	public void testPollFirstEntry() {
-		RedBlackHashTree<Long, TestKey, Long>  min = map.firstNode();
+		RedBlackHashTree<TestKey, Long>  min = map.firstNode();
 		HashMap<RedBlackHashTreeMapTest.TestKey,Long>  poolFirst = map.pollFirstNode().value();
 		assertTestKeyMapEquals(min.value(), poolFirst);
 		assertMapEquals(expMap.pollFirstEntry().getValue(), poolFirst);
@@ -348,7 +348,7 @@ public class RedBlackHashTreeMapTest {
 
 	@Test
 	public void testPollLastNode() {
-		RedBlackHashTree<Long, TestKey, Long>  max = map.lastNode();
+		RedBlackHashTree<TestKey, Long>  max = map.lastNode();
 		HashMap<RedBlackHashTreeMapTest.TestKey,Long>  poolLast = map.pollLastNode().value();
 		assertTestKeyMapEquals(max.value(), poolLast);
 		assertMapEquals(expMap.pollLastEntry().getValue(), poolLast);
@@ -380,9 +380,9 @@ public class RedBlackHashTreeMapTest {
 			}
 		}
 		
-		Iterator<RedBlackHashTree<Long, TestKey, Long>> iter = map.subIterator(start, fromInclusive, end, toInclusive);
+		Iterator<RedBlackHashTree<TestKey, Long>> iter = map.subIterator(start, fromInclusive, end, toInclusive);
 		while(iter.hasNext()) {
-			RedBlackHashTree<Long, TestKey, Long> next = iter.next();
+			RedBlackHashTree<TestKey, Long> next = iter.next();
 			for(Long l : next.value().values()) {
 				actVals.add(l);
 			}
@@ -420,21 +420,21 @@ public class RedBlackHashTreeMapTest {
 
 	@Test
 	public void testHeadIterator() {
-		testSubIterator(map.firstNode().getCompareObj(), true, randomMyKey().timestamp, true);
+		testSubIterator((Long)map.firstNode().getCompareObj(), true, (Long)randomMyKey().timestamp, true);
 
 		testRemove();
 
-		testSubIterator(map.firstNode().getCompareObj(), true, randomMyKey().timestamp, false);
+		testSubIterator((Long)map.firstNode().getCompareObj(), true, (Long)randomMyKey().timestamp, false);
 	}
 
 
 	@Test
 	public void testTailIterator() {
-		testSubIterator(randomMyKey().timestamp, true, map.lastNode().getCompareObj(), true);
+		testSubIterator((Long)randomMyKey().timestamp, true, (Long)map.lastNode().getCompareObj(), true);
 
 		testRemove();
 
-		testSubIterator(randomMyKey().timestamp, true, map.lastNode().getCompareObj(), false);
+		testSubIterator((Long)randomMyKey().timestamp, true, (Long)map.lastNode().getCompareObj(), false);
 	}
 
 	
